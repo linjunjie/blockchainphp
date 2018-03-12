@@ -1,0 +1,13 @@
+{
+    "name": "jae/blockchainphp",
+    "description": "a block-chain implementation by php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "linjunjie",
+            "email": "327837296@qq.com"
+        }
+    ],
+    "require": {}
+}
