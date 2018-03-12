@@ -9,5 +9,9 @@
             "email": "327837296@qq.com"
         }
     ],
-    "require": {}
+    "minimum-stability": "dev",
+    "require": {
+	"php": ">=5.6.0"
+    }
+
 }
