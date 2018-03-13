@@ -17,24 +17,24 @@ class BlockChain{
 	public function register_node($address){
 		$parsed_url = parse_url($address);
 
-		if (is_array($parse_url)) {
+		if (is_array($parsed_url)) {
 			$this->nodes[] = $parsed_url['host'] . ':' . $parsed_url['port'];
 		} else {
 			return false;
 		}
 	}
 
-	public static function valid_chain($chain){
+	public function valid_chain($chain){
 		
 		$last_block = $chain[0];
 		$current_index = 1;
 		while ($current_index < count($chain)) {
 			$block = $chain[$current_index];
-			if($block[$previous_hash] != self::hash($last_block)){
+			if($block['previous_hash'] != self::hash($last_block)){
 				return false;
 			}
 
-			if(!$this->valid_proof($last_block['proof'], $block['proof'], $last_block['previous_hash'])){
+			if(!$this->valid_proof($last_block['proof'], $block['proof'], $block['previous_hash'])){
 				return false;
 			}
 
@@ -56,13 +56,13 @@ class BlockChain{
 		$new_chain = null;
 
 		$max_length = count($this->chain);
-
-		foreach ($node as $neighbour) {
+		foreach ($neighbour as $node) {
 			$response = $this->request("http://{$node}/chain");
-			if($response->status_code == 200){
-				$length = $response->length;
-				$chain = $response->chain;
-
+			$response = json_decode($response, true);
+			
+			if(is_array($response)){
+				$length = $response['length'];
+				$chain = $response['chain'];
 				if($length > $max_length && self::valid_chain($chain)){
 					$max_length = $length;
 					$new_chain = $chain;
@@ -70,12 +70,21 @@ class BlockChain{
 			}
 		}
 
-		if(!is_null($new_chain)){
+		if(is_array($new_chain)){
 			$this->chain = $new_chain;
 			return true;
 		}
 
 		return false;
+	}
+
+	public function request($url){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$res = curl_exec($ch);
+		return $res;
 	}
 
 	public function new_block($proof, $previous_hash){
@@ -108,7 +117,7 @@ class BlockChain{
 		return end($this->chain);
 	}
 
-	public function hash($block){
+	public static function hash($block){
 		$block_string = json_encode($block);
 		return hash('sha256', $block_string);
 	}
@@ -122,6 +131,14 @@ class BlockChain{
 		}
 
 		return $proof;
+	}
+
+	public function __get($name){
+		return $this->$name;
+	}
+
+	public function __set($name, $value){
+		$this->$name = $value;
 	}
 
 	public function uuid(){
