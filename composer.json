@@ -12,7 +12,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.6.0",
-        "workerman/workerman": "dev-master"
+        "workerman/workerman": "3.5.*"
     }
 
 }
