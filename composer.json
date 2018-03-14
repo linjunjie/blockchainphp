@@ -9,7 +9,6 @@
             "email": "327837296@qq.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.6.0",
         "workerman/workerman": "3.5.*"
